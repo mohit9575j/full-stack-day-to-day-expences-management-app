@@ -72,35 +72,8 @@ export const register = async (req, res) => {
             res.status(500).json({message: error.message});
         }
     };
-
-    // export const setNewPassword = async(req, res) => {
-    //     const {token, newPassword} = req.body;
-
-    //     try{
-           
-    //     const user = await User.findOne({where: {
-    //         resetToken: token,
-    //         resetTokenExpiry: {[db.sequelize.Op.gt]: Date.now()}
-    //     }
-    // });
-
-    //  if(!user) return res.status(404).json({message: "Invalid or expired token"});
-
-       
-
-    //   user.password = await  bcrypt.hash(newPassword,10);
-    //   user.resetTOken = null;
-    //   user.resetTokenExpiry = null;
-
-    //   await user.save();
-
-    //   res.json({message: "Password updated successfully"});
-
-    //     }catch(error){
-    //         res.status(500).json({message: error.message});
-    //     }
-    // };
-
+ 
+  
 
 
 
