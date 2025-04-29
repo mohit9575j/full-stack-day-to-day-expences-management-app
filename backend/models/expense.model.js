@@ -6,6 +6,10 @@ import sequelize from '../config/db.js';
       type: DataTypes.FLOAT,
       allowNull: false,
     },
+    description: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
   });
   
 export default Expense;
