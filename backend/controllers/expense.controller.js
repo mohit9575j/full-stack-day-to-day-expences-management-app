@@ -19,4 +19,14 @@ export const addExpense = async (req, res) => {
   }
 };
 
+// Get all expenses
+export const getAllExpenses = async (req, res) => {
+  try {
+    const expenses = await Expense.findAll();
+    res.status(200).json(expenses);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
  
