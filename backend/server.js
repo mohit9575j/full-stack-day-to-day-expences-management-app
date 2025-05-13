@@ -1,54 +1,21 @@
-// import express from 'express';
-// import dotenv  from 'dotenv';
-// import sequelize from './config/db.js';
-// import authRoutes from './routes/auth.routes.js';
-
-// dotenv.config();
-
-// const app = express();
-
-// app.use(express.json());
-
-// const PORT = process.env.DB_PORT || 3000;
-
-// app.use('/api/auth', authRoutes);
-
-// const serverstart = async () => {
-//     try {
-//         await sequelize.authenticate();
-//         await sequelize.sync();
-//         console.log("✅ Database connected and models synced");
-
-       
-//     } catch (error) {
-//         console.log(" Database connection error:", error);
-//     }
-// };
-
-// serverstart();
-
-// app.listen(PORT, () => {
-//     console.log(` Server running on port ${PORT}`);
-// });
-
- 
-
-
-
-
 
 import express from 'express';
 import dotenv from 'dotenv';
+import cors  from 'cors';
 import sequelize from './config/db.js';
 import authRoutes from './routes/auth.routes.js';
+import expenseRoutes from './routes/expense.routes.js';
+import premiumRoutes from './routes/premium.routes.js';
+import leadRoutes from './routes/lead.routes.js';
 
 dotenv.config();
-
+           
 const app = express();
+app.use(cors());
 
 app.use(express.json());
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4000;
 
 // Add a basic route for the root URL
 app.get('/', (req, res) => {
@@ -56,11 +23,15 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api/auth', authRoutes);
+app.use('/api/expenses', expenseRoutes);
+app.use('/api/premium', premiumRoutes);
+app.use('/api/premium' ,leadRoutes );
 
+ 
 const serverstart = async () => {
     try {
         await sequelize.authenticate();
-        await sequelize.sync();
+        await sequelize.sync({ alter: true });
         console.log("✅ Database connected and models synced");
         
         // Start the server AFTER database connection is established
@@ -73,5 +44,5 @@ const serverstart = async () => {
     }
 };
 
-// Start the server
+// Start the servery
 serverstart();

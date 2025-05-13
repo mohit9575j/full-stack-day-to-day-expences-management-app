@@ -1,0 +1,230 @@
+ 
+import db from '../models/index.js';
+import axios from 'axios';
+import crypto from 'crypto';
+
+const User = db.User;
+const Order = db.Order;
+
+// Create a new premium order
+export const createOrder = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        if(!userId) return res.status(500).json({message:`the user id which i want to know is ${userId}` });
+         
+        // Get user details
+        const user = await User.findByPk(userId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        
+        // Check if user is already premium
+        if (user.isPremium) {
+            return res.status(400).json({ message: "User is already a premium member" });
+        }
+        
+        // Generate unique orderId
+        const orderId = 'order_' + crypto.randomBytes(8).toString('hex');
+        const orderAmount = process.env.PREMIUM_MEMBERSHIP_AMOUNT || 499;
+        
+        // Create order record in our database
+        const orderCreated = await Order.create({
+            orderAmount,
+            orderCurrency: 'INR',
+            orderStatus: 'PENDING',
+            orderId,
+            orderNote: 'Premium Membership Purchase',
+            customerName: user.name,
+            customerEmail: user.email,
+            customerPhone: req.body.phoneNumber || '',  // Optional
+            UserId: userId
+        });
+        
+        // Prepare data for Cashfree API
+        const orderData = {
+            order_id: orderId,
+            order_amount: orderAmount,
+            order_currency: 'INR',
+            order_note: 'Premium Membership Purchase',
+            customer_details: {
+                customer_id: userId.toString(),
+                customer_name: user.name,
+                customer_email: user.email,
+                customer_phone: req.body.phoneNumber || ''
+            },
+            // Updated: removed order_token from return_url template
+            order_meta: {
+                return_url: req.body.returnUrl ? `${req.body.returnUrl}?order_id={order_id}` : 'http://localhost:4000?order_id={order_id}',
+                notify_url: req.body.notifyUrl || ''
+            }
+        };
+        
+        console.log("Sending to Cashfree:", JSON.stringify(orderData));
+        
+        // Call Cashfree API to create order
+        const response = await axios.post(process.env.CASHFREE_API_URL, orderData, {
+            headers: {
+                'x-api-version': '2022-09-01',
+                'x-client-id': process.env.CASHFREE_APP_ID,
+                'x-client-secret': process.env.CASHFREE_SECRET_KEY,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        return res.status(200).json({
+            success: true,
+            message: "Order created successfully",
+            orderId: orderId,
+            order: orderCreated,
+            cashfreeOrderData: response.data
+        });
+        
+    } catch (error) {
+        console.error("Error creating order:", error.response?.data || error.message);
+        return res.status(500).json({ 
+            success: false, 
+            message: "Failed to create order", 
+            error: error.message 
+        });
+    }
+};
+
+// Verify payment and update order status
+export const verifyPayment = async (req, res) => {
+    try {
+        const { orderId } = req.body;
+        
+        // Get order details from our database
+        const order = await Order.findOne({ where: { orderId } });
+        if (!order) {
+            return res.status(404).json({ message: "Order not found" });
+        }
+        
+        // Verify with Cashfree
+        const response = await axios.get(`${process.env.CASHFREE_API_URL}/${orderId}`, {
+            headers: {
+                'x-api-version': '2022-09-01',
+                'x-client-id': process.env.CASHFREE_APP_ID,
+                'x-client-secret': process.env.CASHFREE_SECRET_KEY,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        const { order_status, cf_payment_id } = response.data;
+        
+        // Update order in database
+        order.paymentId = cf_payment_id || null;
+        
+        if (order_status === 'PAID') {
+            order.orderStatus = 'SUCCESSFUL';
+            
+            // Make user premium
+            const user = await User.findByPk(order.UserId);
+            if (user) {
+                user.isPremium = true;
+                await user.save();
+            }
+            
+            await order.save();
+            
+            return res.status(200).json({
+                success: true,
+                message: "Payment successful and premium status activated",
+                isPremium: true
+            });
+        } else if (order_status === 'EXPIRED' || order_status === 'CANCELLED') {
+            order.orderStatus = 'FAILED';
+            await order.save();
+            
+            return res.status(400).json({
+                success: false,
+                message: "Payment failed or cancelled",
+                isPremium: false
+            });
+        } else {
+            // For any other status
+            return res.status(202).json({
+                success: false,
+                message: "Payment status is pending or unknown",
+                status: order_status
+            });
+        }
+        
+    } catch (error) {
+        console.error("Error verifying payment:", error.response?.data || error.message);
+        return res.status(500).json({ 
+            success: false, 
+            message: "Failed to verify payment", 
+            error: error.message 
+        });
+    }
+};
+
+// Webhook handler for Cashfree callbacks
+export const webhook = async (req, res) => {
+    try {
+        const event = req.body;
+        const { order_id, order_status, payment_id } = event.data;
+        
+        // Verify signature for security
+        const signature = req.headers['x-webhook-signature'];
+        // You should validate the signature with your secret key
+        
+        // Find order in our database
+        const order = await Order.findOne({ where: { orderId: order_id } });
+        if (!order) {
+            return res.status(404).json({ message: "Order not found" });
+        }
+        
+        // Update order details
+        order.paymentId = payment_id || order.paymentId;
+        
+        if (order_status === 'PAID') {
+            order.orderStatus = 'SUCCESSFUL';
+            
+            // Update user to premium
+            const user = await User.findByPk(order.UserId);
+            if (user) {
+                user.isPremium = true;
+                await user.save();
+            }
+        } else if (order_status === 'EXPIRED' || order_status === 'CANCELLED') {
+            order.orderStatus = 'FAILED';
+        }
+        
+        await order.save();
+        
+        return res.status(200).json({ received: true });
+        
+    } catch (error) {
+        console.error("Webhook error:", error);
+        return res.status(500).json({ 
+            success: false, 
+            error: error.message 
+        });
+    }
+};
+
+// Check premium status for a user
+export const getPremiumStatus = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        
+        const user = await User.findByPk(userId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        
+        return res.status(200).json({
+            isPremium: user.isPremium
+        });
+        
+    } catch (error) {
+        console.error("Error checking premium status:", error);
+        return res.status(500).json({ 
+            success: false, 
+            message: "Failed to check premium status", 
+            error: error.message 
+        });
+    }
+};

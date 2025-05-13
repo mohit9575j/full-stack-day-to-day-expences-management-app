@@ -14,7 +14,8 @@ import sequelize from '../config/db.js';
         type: DataTypes.STRING,
         allowNull: false,
       },
+       
   });
-  
+   
 export default Expense;
 

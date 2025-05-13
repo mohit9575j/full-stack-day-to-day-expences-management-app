@@ -3,13 +3,27 @@ import { Sequelize } from 'sequelize';
 import sequelize from '../config/db.js';
 import User from './user.model.js';
 import Expense from './expense.model.js';
+import Order from './order.model.js';
+
+
+User.hasMany(Expense);     // 👈 User ke pass multiple expenses
+Expense.belongsTo(User); 
+
+User.hasMany(Order);
+Order.belongsTo(User);
+
+// Associations
+User.hasMany(Expense);
+Expense.belongsTo(User);
+
 
 
 const db = {
   sequelize,
   Sequelize,
   User,
-  Expense
+  Expense,
+  Order
 };
 
 // For Sequelize operators like Op.gt

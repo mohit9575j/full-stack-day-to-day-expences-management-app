@@ -27,7 +27,13 @@ export const user = Sequelize.define('User', {
      resetTokenExpiry: {
         type: DataTypes.DATE,
         allowNull: true,
-     }
+     },
+
+     isPremium: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+   }
 
 })
 
