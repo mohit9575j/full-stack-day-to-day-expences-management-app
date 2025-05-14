@@ -117,7 +117,7 @@ const ExpensePieChart = () => {
 
         // STEP 3: Fetch expenses data
         try {
-          const response = await fetch("http://localhost:4000/api/expenses/all", {
+          const response = await fetch("http://13.203.206.230:4000/api/expenses/all", {
             headers: {
               "Content-Type": "application/json",
               Authorization: `Bearer ${token}`,
