@@ -5,7 +5,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-const API_BASE_URL = 'http://localhost:4000';
+const API_BASE_URL = 'http://13.203.206.230:4000';
 
 const PremiumButton = () => {
   const [isPremium, setIsPremium] = useState(false);
