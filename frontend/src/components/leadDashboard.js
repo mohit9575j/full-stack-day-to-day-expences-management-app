@@ -11,7 +11,7 @@ const LeadDashboard = () => {
   const [leaderboardLoading, setLeaderboardLoading] = useState(false);
 
   // API endpoints
-  const API_BASE_URL = 'http://localhost:4000';
+  const API_BASE_URL = 'http://13.203.206.230:4000';
   const leaderboardUrl = `${API_BASE_URL}/api/premium/leaderboard`;
 
   // Function to fetch leaderboard data
