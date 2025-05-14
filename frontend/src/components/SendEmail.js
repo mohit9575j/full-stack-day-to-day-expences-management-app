@@ -23,7 +23,7 @@ const SendEmail = () => {
     e.preventDefault();
 
     try {
-      const res = await axios.post("http://localhost:4000/api/auth/reset-password-request", form);
+      const res = await axios.post("http://13.203.206.230:4000/api/auth/reset-password-request", form);
 
       // ✅ Token ko localStorage me save karo
       const token = res.data.token;
