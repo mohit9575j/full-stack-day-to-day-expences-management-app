@@ -24,7 +24,7 @@ import { useNavigate, Link } from "react-router-dom";
     
 
     try {
-      const res = await axios.post("http://localhost:4000/api/auth/register", form);
+      const res = await axios.post("http://13.203.206.230:4000/api/auth/register", form);
       setMessage(res.data.message);
       setForm({ name: "", email: "", password: "" });
     navigate("/login");
