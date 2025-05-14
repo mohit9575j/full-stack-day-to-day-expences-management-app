@@ -23,7 +23,7 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const res = await axios.post("http://localhost:4000/api/auth/login", form);
+      const res = await axios.post("http://13.203.206.230:4000/api/auth/login", form);
 
       // ✅ Token ko localStorage me save karo
       const token = res.data.token;
@@ -35,7 +35,7 @@ const Login = () => {
 
       // Correct way to check the status
  
-      const res2 = await axios.get("http://localhost:4000/api/premium/status", {
+      const res2 = await axios.get("http://13.203.206.230:4000/api/premium/status", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
