@@ -5,7 +5,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 
 // Base URL for all API calls
-const API_BASE_URL = 'http://localhost:4000';
+const API_BASE_URL = 'http://13.203.206.230:4000';
 
 const PremiumCallback = () => {
   const [status, setStatus] = useState('verifying');
