@@ -17,7 +17,7 @@ const Dashboard = () => {
   const [editing, setEditing] = useState(null);
 
   // API endpoints
-  const API_BASE_URL = 'http://localhost:4000';
+  const API_BASE_URL = 'http://13.203.206.230:4000';
   const addExpenseUrl = `${API_BASE_URL}/api/expenses/add`;
   const getExpensesUrl = `${API_BASE_URL}/api/expenses/all`;
   const deleteExpenseUrl = `${API_BASE_URL}/api/expenses/delete`;
