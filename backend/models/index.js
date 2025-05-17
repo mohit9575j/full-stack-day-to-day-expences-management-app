@@ -15,3 +15,12 @@ Order.belongsTo(User);
 // Associations (redundant but commonly used if modular structure is planned)
 User.hasMany(Expense);
 Expense.belongsTo(User);
+
+
+const db = {
+  sequelize,
+  Sequelize,
+  User,
+  Expense,
+  Order
+};
