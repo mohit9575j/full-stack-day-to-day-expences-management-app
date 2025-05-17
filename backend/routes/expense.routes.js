@@ -5,3 +5,5 @@ import authMiddleware from '../middleware/authMiddleware.js';
 const router = express.Router();
 
 router.post('/add', authMiddleware, addExpense);
+
+router.get('/all', authMiddleware, getAllExpenses);
