@@ -86,3 +86,64 @@ export const createOrder = async (req, res) => {
     }
 };
 
+// Verify payment and update order status
+export const verifyPayment = async (req, res) => {
+    try {
+        const { orderId } = req.body;
+        
+        const order = await Order.findOne({ where: { orderId } });
+        if (!order) {
+            return res.status(404).json({ message: "Order not found" });
+        }
+
+        const response = await axios.get(`${process.env.CASHFREE_API_URL}/${orderId}`, {
+            headers: {
+                'x-api-version': '2022-09-01',
+                'x-client-id': process.env.CASHFREE_APP_ID,
+                'x-client-secret': process.env.CASHFREE_SECRET_KEY,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        const { order_status, cf_payment_id } = response.data;
+        order.paymentId = cf_payment_id || null;
+
+        if (order_status === 'PAID') {
+            order.orderStatus = 'SUCCESSFUL';
+            const user = await User.findByPk(order.UserId);
+            if (user) {
+                user.isPremium = true;
+                await user.save();
+            }
+            await order.save();
+            return res.status(200).json({
+                success: true,
+                message: "Payment successful and premium status activated",
+                isPremium: true
+            });
+        } else if (order_status === 'EXPIRED' || order_status === 'CANCELLED') {
+            order.orderStatus = 'FAILED';
+            await order.save();
+            return res.status(400).json({
+                success: false,
+                message: "Payment failed or cancelled",
+                isPremium: false
+            });
+        } else {
+            return res.status(202).json({
+                success: false,
+                message: "Payment status is pending or unknown",
+                status: order_status
+            });
+        }
+    } catch (error) {
+        console.error("Error verifying payment:", error.response?.data || error.message);
+        return res.status(500).json({ 
+            success: false, 
+            message: "Failed to verify payment", 
+            error: error.message 
+        });
+    }
+};
+
+
