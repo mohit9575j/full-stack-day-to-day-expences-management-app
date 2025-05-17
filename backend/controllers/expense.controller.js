@@ -56,19 +56,27 @@ export const getAllExpenses = async (req, res) => {
 }; 
 
 
-// Delete expense
+
+/**
+ * Deletes a specific expense if it belongs to the current user.
+ */
 export const deleteExpense = async (req, res) => {
-  const { id } = req.params;
+    const { id } = req.params;
+    const UserId = req.user.id;
 
-  try {
-    const expense = await Expense.findByPk(id);
-    if (!expense) return res.status(404).json({ message: 'Expense not found' });
+    try {
+        const expense = await Expense.findOne({ where: { id, UserId } });
 
-    await expense.destroy();
-    res.status(200).json({ message: 'Expense deleted successfully' });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
+        if (!expense) {
+            return res.status(404).json({ message: 'Expense not found' });
+        }
+
+        await expense.destroy();
+        res.status(200).json({ message: 'Expense deleted successfully' });
+
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 };
 
 // Update expense
