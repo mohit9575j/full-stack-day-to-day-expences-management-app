@@ -25,3 +25,16 @@ export const createOrder = async (req, res) => {
         // Generate unique orderId
         const orderId = 'order_' + crypto.randomBytes(8).toString('hex');
         const orderAmount = process.env.PREMIUM_MEMBERSHIP_AMOUNT || 499;
+
+            // Create order record in our database
+        const orderCreated = await Order.create({
+            orderAmount,
+            orderCurrency: 'INR',
+            orderStatus: 'PENDING',
+            orderId,
+            orderNote: 'Premium Membership Purchase',
+            customerName: user.name,
+            customerEmail: user.email,
+            customerPhone: req.body.phoneNumber || '',  
+            UserId: userId
+        });
