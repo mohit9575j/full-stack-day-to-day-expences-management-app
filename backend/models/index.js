@@ -16,6 +16,12 @@ Order.belongsTo(User);
 User.hasMany(Expense);
 Expense.belongsTo(User);
 
+// For Sequelize operators like Op.gt
+db.sequelize = sequelize;
+db.Sequelize = Sequelize;
+
+export default db;
+
 
 const db = {
   sequelize,
