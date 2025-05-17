@@ -31,6 +31,27 @@ app.use('/api/auth', authRoutes);
 // Expense tracking-related endpoints
 app.use('/api/expenses', expenseRoutes);
 
+const serverstart = async () => {
+    try {
+        // Test database connection
+        await sequelize.authenticate();
+
+        // Synchronize models with DB (alter mode)
+        await sequelize.sync({ alter: true });
+
+        console.log(" Database connected and models synced");
+
+        // Start listening for HTTP requests
+        app.listen(PORT, () => {
+            console.log(`Server running on port ${PORT}`);
+        });
+    } catch (error) {
+        console.error(" Database connection error:", error);
+        process.exit(1); // Exit process with failure
+    }
+};
+
+
 // Premium subscription-related endpoints
 app.use('/api/premium', premiumRoutes);
 
