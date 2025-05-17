@@ -185,5 +185,30 @@ export const webhook = async (req, res) => {
     }
 };
 
+// Check premium status for a user
+export const getPremiumStatus = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        
+        const user = await User.findByPk(userId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        
+        return res.status(200).json({
+            isPremium: user.isPremium
+        });
+        
+    } catch (error) {
+        console.error("Error checking premium status:", error);
+        return res.status(500).json({ 
+            success: false, 
+            message: "Failed to check premium status", 
+            error: error.message 
+        });
+    }
+};
+
+
 
 
