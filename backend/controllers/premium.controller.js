@@ -146,4 +146,44 @@ export const verifyPayment = async (req, res) => {
     }
 };
 
+// Webhook handler for Cashfree callbacks
+export const webhook = async (req, res) => {
+    try {
+        const event = req.body;
+        const { order_id, order_status, payment_id } = event.data;
+        
+        const signature = req.headers['x-webhook-signature'];
+        // You should validate the signature with your secret key
+
+        const order = await Order.findOne({ where: { orderId: order_id } });
+        if (!order) {
+            return res.status(404).json({ message: "Order not found" });
+        }
+
+        order.paymentId = payment_id || order.paymentId;
+
+        if (order_status === 'PAID') {
+            order.orderStatus = 'SUCCESSFUL';
+            const user = await User.findByPk(order.UserId);
+            if (user) {
+                user.isPremium = true;
+                await user.save();
+            }
+        } else if (order_status === 'EXPIRED' || order_status === 'CANCELLED') {
+            order.orderStatus = 'FAILED';
+        }
+
+        await order.save();
+
+        return res.status(200).json({ received: true });
+    } catch (error) {
+        console.error("Webhook error:", error);
+        return res.status(500).json({ 
+            success: false, 
+            error: error.message 
+        });
+    }
+};
+
+
 
