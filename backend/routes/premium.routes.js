@@ -35,3 +35,15 @@ router.post('/verify-payment', authMiddleware, verifyPayment);
  * @access  Public (Called by Cashfree, no auth required)
  */
 router.post('/webhook', webhook);
+
+/**
+ * @route   GET /status
+ * @desc    Retrieves current premium status of the authenticated user
+ * @access  Protected (Requires Authentication)
+ */
+router.get('/status', authMiddleware, getPremiumStatus);
+
+// Export Router Module
+export default router;
+
+
