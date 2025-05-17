@@ -79,4 +79,36 @@ export const deleteExpense = async (req, res) => {
     }
 };
 
-feat: Allow users to delete their own expenses securely
+ 
+/**
+ * Updates an existing expense for the current user.
+ * Only updates fields that are provided.
+ */
+export const updateExpense = async (req, res) => {
+    const { id } = req.params;
+    const { amount, description, category } = req.body;
+    const UserId = req.user.id;
+
+    try {
+        const expense = await Expense.findOne({ where: { id, UserId } });
+
+        if (!expense) {
+            return res.status(404).json({ message: 'Expense not found' });
+        }
+
+        // Update only the provided fields
+        expense.amount = amount || expense.amount;
+        expense.description = description || expense.description;
+        expense.category = category || expense.category;
+
+        await expense.save();
+
+        res.status(200).json({
+            message: 'Expense updated successfully',
+            expense
+        });
+
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
