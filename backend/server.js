@@ -31,6 +31,13 @@ app.use('/api/auth', authRoutes);
 // Expense tracking-related endpoints
 app.use('/api/expenses', expenseRoutes);
 
+// Premium subscription-related endpoints
+app.use('/api/premium', premiumRoutes);
+
+// Leaderboard endpoint (under premium as well)
+app.use('/api/premium', leadRoutes);
+
+
 const serverstart = async () => {
     try {
         // Test database connection
@@ -52,9 +59,4 @@ const serverstart = async () => {
 };
 
 
-// Premium subscription-related endpoints
-app.use('/api/premium', premiumRoutes);
-
-// Leaderboard endpoint (under premium as well)
-app.use('/api/premium', leadRoutes);
 
