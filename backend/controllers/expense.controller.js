@@ -2,22 +2,40 @@ import db from '../models/index.js';
 
 const Expense  = db.Expense;
 
-// Add expense
+
+/**
+ * Adds a new expense for the logged-in user.
+ * Validates that the category is provided.
+ * The expense is linked to the authenticated user.
+ */
 export const addExpense = async (req, res) => {
-  const { amount, description, category } = req.body;
+    const { amount, description, category } = req.body;
 
-  try {
-    const newExpense = await Expense.create({
-      amount,
-      description,
-      category,
-    });
+    // Validate category
+    if (!category) {
+        return res.status(400).json({ message: "Category is required" });
+    }
 
-    res.status(201).json({ message: 'Expense added successfully', expense: newExpense });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
+    try {
+        const UserId = req.user.id; // Retrieved from auth middleware
+
+        const newExpense = await Expense.create({
+            amount,
+            description,
+            category,
+            UserId // Links expense to the user
+        });
+
+        res.status(201).json({
+            message: 'Expense added successfully',
+            expense: newExpense
+        });
+
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 };
+
 
 // Get all expenses
 export const getAllExpenses = async (req, res) => {
