@@ -38,3 +38,33 @@ export const createOrder = async (req, res) => {
             customerPhone: req.body.phoneNumber || '',  
             UserId: userId
         });
+
+            // Prepare data for Cashfree API
+        const orderData = {
+            order_id: orderId,
+            order_amount: orderAmount,
+            order_currency: 'INR',
+            order_note: 'Premium Membership Purchase',
+            customer_details: {
+                customer_id: userId.toString(),
+                customer_name: user.name,
+                customer_email: user.email,
+                customer_phone: req.body.phoneNumber || ''
+            },
+            order_meta: {
+                return_url: req.body.returnUrl ? `${req.body.returnUrl}?order_id={order_id}` : 'http://localhost:4000?order_id={order_id}',
+                notify_url: req.body.notifyUrl || ''
+            }
+        };
+        
+        console.log("Sending to Cashfree:", JSON.stringify(orderData));
+
+        // Call Cashfree API to create order
+        const response = await axios.post(process.env.CASHFREE_API_URL, orderData, {
+            headers: {
+                'x-api-version': '2022-09-01',
+                'x-client-id': process.env.CASHFREE_APP_ID,
+                'x-client-secret': process.env.CASHFREE_SECRET_KEY,
+                'Content-Type': 'application/json'
+            }
+        });
