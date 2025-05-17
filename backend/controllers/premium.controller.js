@@ -68,3 +68,21 @@ export const createOrder = async (req, res) => {
                 'Content-Type': 'application/json'
             }
         });
+
+                return res.status(200).json({
+            success: true,
+            message: "Order created successfully",
+            orderId: orderId,
+            order: orderCreated,
+            cashfreeOrderData: response.data
+        });
+    } catch (error) {
+        console.error("Error creating order:", error.response?.data || error.message);
+        return res.status(500).json({ 
+            success: false, 
+            message: "Failed to create order", 
+            error: error.message 
+        });
+    }
+};
+
