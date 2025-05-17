@@ -26,3 +26,11 @@ const Order = sequelize.define('Order', {
     type: DataTypes.STRING,
     allowNull: true,
   },
+  orderNote: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  customerName: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
