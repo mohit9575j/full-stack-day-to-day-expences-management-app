@@ -4,3 +4,8 @@ import { register, login, resetPasswordRequest, setNewPassword } from '../contro
 const router = express.Router(); 
 
 router.post('/register', register);
+
+router.post('/login', login);
+
+router.post('/reset-password-request', resetPasswordRequest);
+
