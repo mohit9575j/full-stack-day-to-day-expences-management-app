@@ -17,3 +17,5 @@ app.use(cors());
 
 // Parse incoming JSON requests
 app.use(express.json());
+
+const PORT = process.env.PORT || 4000;
