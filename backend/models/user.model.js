@@ -27,3 +27,14 @@ export const user = Sequelize.define('User', {
         type: DataTypes.DATE,
         allowNull: true,
      },
+
+          isPremium: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+   }
+
+})
+
+export default user;
+
