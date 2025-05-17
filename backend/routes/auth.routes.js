@@ -9,3 +9,6 @@ router.post('/login', login);
 
 router.post('/reset-password-request', resetPasswordRequest);
 
+router.post('/reset-password', setNewPassword);
+
+export default router;
