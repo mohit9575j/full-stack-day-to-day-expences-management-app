@@ -37,15 +37,24 @@ export const addExpense = async (req, res) => {
 };
 
 
-// Get all expenses
+/**
+ * Retrieves all expenses belonging to the authenticated user.
+ */
 export const getAllExpenses = async (req, res) => {
-  try {
-    const expenses = await Expense.findAll();
-    res.status(200).json(expenses);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
+    try {
+        const UserId = req.user.id; // User from token
+
+        const expenses = await Expense.findAll({
+            where: { UserId } // Filter expenses by user
+        });
+
+        res.status(200).json({ expenses });
+
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}; 
+
 
 // Delete expense
 export const deleteExpense = async (req, res) => {
