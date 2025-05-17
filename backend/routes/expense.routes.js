@@ -3,3 +3,5 @@ import { addExpense, getAllExpenses, deleteExpense, updateExpense } from '../con
 import authMiddleware from '../middleware/authMiddleware.js';
 
 const router = express.Router();
+
+router.post('/add', authMiddleware, addExpense);
