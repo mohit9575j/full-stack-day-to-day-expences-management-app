@@ -24,3 +24,9 @@ const PORT = process.env.PORT || 4000;
 app.get('/', (req, res) => {
   res.send('Server is running successfully!');
 });
+
+// Authentication-related endpoints
+app.use('/api/auth', authRoutes);
+
+// Expense tracking-related endpoints
+app.use('/api/expenses', expenseRoutes);
