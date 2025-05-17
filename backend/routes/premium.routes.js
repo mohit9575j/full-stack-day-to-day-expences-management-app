@@ -21,3 +21,17 @@ const router = express.Router();
  * @access  Protected (Requires Authentication)
  */
 router.post('/create-order', authMiddleware, createOrder);
+
+/**
+ * @route   POST /verify-payment
+ * @desc    Verifies payment after transaction completion
+ * @access  Protected (Requires Authentication)
+ */
+router.post('/verify-payment', authMiddleware, verifyPayment);
+
+/**
+ * @route   POST /webhook
+ * @desc    Receives real-time payment status updates from Cashfree
+ * @access  Public (Called by Cashfree, no auth required)
+ */
+router.post('/webhook', webhook);
