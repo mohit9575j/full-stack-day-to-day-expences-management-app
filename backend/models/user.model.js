@@ -6,29 +6,3 @@ export const user = Sequelize.define('User', {
         type: DataTypes.STRING,
          allowNull: false,
     },
-     
-     email: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        unique: true,
-        validate: {isEmail: true}
-     },
-
-     password: {
-        type: DataTypes.STRING,
-        allowNull: false,
-     },
-
-     resetToken: {
-        type: DataTypes.STRING,
-        allowNull: true,
-     },
-   
-     resetTokenExpiry: {
-        type: DataTypes.DATE,
-        allowNull: true,
-     }
-
-})
-
-export default user;
