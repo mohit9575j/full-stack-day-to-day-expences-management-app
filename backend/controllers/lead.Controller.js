@@ -24,3 +24,6 @@ export const getLeaderboard = async (req, res) => {
     res.status(500).json({ success: false, message: 'Something went wrong' });
   }
 };
+// inside catch block
+console.error('Leaderboard error:', error);
+res.status(500).json({ success: false, message: 'Something went wrong' });
