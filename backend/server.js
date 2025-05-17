@@ -19,3 +19,8 @@ app.use(cors());
 app.use(express.json());
 
 const PORT = process.env.PORT || 4000;
+
+// Health check endpoint for root URL
+app.get('/', (req, res) => {
+  res.send('Server is running successfully!');
+});
