@@ -34,3 +34,15 @@ const Order = sequelize.define('Order', {
     type: DataTypes.STRING,
     allowNull: false,
   },
+    customerEmail: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  customerPhone: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+});
+
+export default Order;
+
