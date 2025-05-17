@@ -7,3 +7,8 @@ const router = express.Router();
 router.post('/add', authMiddleware, addExpense);
 
 router.get('/all', authMiddleware, getAllExpenses);
+
+router.delete('/delete/:id', authMiddleware, deleteExpense);
+router.put('/update/:id', authMiddleware, updateExpense);
+
+export default router;
