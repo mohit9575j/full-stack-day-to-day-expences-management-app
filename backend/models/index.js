@@ -6,16 +6,12 @@ import Expense from './expense.model.js';
 import Order from './order.model.js';
 
 
+ User.hasMany(Expense);     //  User ke pass multiple expenses
+Expense.belongsTo(User); 
 
-const db = {
-  sequelize,
-  Sequelize,
-  User,
-  Expense
-};
+User.hasMany(Order);
+Order.belongsTo(User);
 
-// For Sequelize operators like Op.gt
-db.sequelize = sequelize;
-db.Sequelize = Sequelize;
-
-export default db;
+// Associations (redundant but commonly used if modular structure is planned)
+User.hasMany(Expense);
+Expense.belongsTo(User);
