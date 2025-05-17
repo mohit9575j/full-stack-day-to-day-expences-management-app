@@ -15,4 +15,15 @@ const authMiddleware = (req, res, next) => {
   // Extract token from header ("Bearer <token>")
   const token = authHeader.split(" ")[1];
 
+    try {
+    // Verify token using secret key; throws error if invalid/expired
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    // Attach decoded token payload (e.g. { id: user.id }) to request object
+    req.user = decoded;
+
+    // Proceed to next middleware or route handler
+    next();
+  } 
+
   
