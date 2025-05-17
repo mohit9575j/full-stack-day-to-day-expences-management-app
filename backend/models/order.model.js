@@ -12,3 +12,17 @@ const Order = sequelize.define('Order', {
     defaultValue: 'INR',
   },
 
+  orderStatus: {
+    type: DataTypes.ENUM('PENDING', 'SUCCESSFUL', 'FAILED'),
+    allowNull: false,
+    defaultValue: 'PENDING',
+  },
+  orderId: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: true,
+  },
+  paymentId: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
